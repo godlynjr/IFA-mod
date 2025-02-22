@@ -127,11 +127,17 @@ const HealthMetricsChart: React.FC<HealthMetricsChartProps> = ({ patient, timefr
             dataKey="value"
             stroke="url(#chartGradient)"
             strokeWidth={3}
-            dot={(props) =>
-              hoveredIndex === props.index ? (
-                <circle cx={props.cx} cy={props.cy} r={6} fill="#00C49F" />
-              ) : null
-            } // Show dot only on hover
+            dot={(props) => {
+              const { cx, cy, index } = props;
+              return (
+                <circle
+                  cx={cx}
+                  cy={cy}
+                  r={hoveredIndex === index ? 6 : 0} // Render a transparent circle when not hovered
+                  fill={hoveredIndex === index ? "#00C49F" : "transparent"}
+                />
+              );
+            }}
           />
         </LineChart>
       </ResponsiveContainer>
