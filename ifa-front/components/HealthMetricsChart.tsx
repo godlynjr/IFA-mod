@@ -25,35 +25,36 @@ interface HealthMetricsChartProps {
 }
 
 // Function to extract chart data from patient metrics
+// Function to extract chart data from patient metrics
 const getChartData = (patient: Patient | null, timeframe: string) => {
   if (!patient) return [];
 
   let metricKey = "";
-  let valueKey = ""; // This ensures correct data extraction
 
+  // Map timeframe to corresponding key
   switch (timeframe) {
     case "Daily":
       metricKey = "daily_avg";
-      valueKey = "daily_avg";
       break;
     case "Weekly":
       metricKey = "weekly_avg";
-      valueKey = "weekly_avg";
       break;
     case "Yearly":
       metricKey = "monthly_avg";
-      valueKey = "monthly_avg";
       break;
     default:
       return [];
   }
 
+  // Ensure correct metric access from patient.metrics
   const metricData = patient.metrics.heart?.data?.[metricKey] ?? [];
-
+  
+  // Ensure proper formatting of values
   return metricData.map((entry: any) => ({
-    value: parseFloat(entry[valueKey]?.toFixed(2) || "0"),
+    value: parseFloat(entry?.[metricKey]?.toFixed(2) || "0"),
   }));
 };
+
 
 // Custom Tooltip
 const CustomTooltip = ({ active, payload }: any) => {

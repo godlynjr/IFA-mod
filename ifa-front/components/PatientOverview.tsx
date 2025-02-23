@@ -16,18 +16,24 @@ interface Patient {
   metrics: Record<string, any>;
 }
 
+interface PatientOverviewProps {
+  patient: Patient | null;
+}
+
 // Helper function to return "N/A" for missing values
 const getValue = (value?: string | number) => (value !== undefined && value !== "" ? value : "N/A");
 
-const PatientOverview: React.FC<{ patient: Patient | null }> = ({ patient }) => {
-  const [loading, setLoading] = useState(false);
+const PatientOverview: React.FC<PatientOverviewProps> = ({ patient }) => {
   const [showInsights, setShowInsights] = useState(false);
+  const [loadingInsights, setLoadingInsights] = useState(false);
 
   // Handle AI Insights Button Click
   const handleShowInsights = () => {
-    setLoading(true);
+    setLoadingInsights(true);
+    setShowInsights(false); // Hide previous insights while loading
+
     setTimeout(() => {
-      setLoading(false);
+      setLoadingInsights(false);
       setShowInsights(true);
     }, 3000); // Simulates loading for 3 seconds
   };
@@ -84,7 +90,7 @@ const PatientOverview: React.FC<{ patient: Patient | null }> = ({ patient }) => 
       </div>
 
       {/* Full-Screen Loading Animation */}
-      {loading && (
+      {loadingInsights && (
         <motion.div
           className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-95 z-50"
           initial={{ opacity: 0 }}
@@ -100,12 +106,13 @@ const PatientOverview: React.FC<{ patient: Patient | null }> = ({ patient }) => 
         </motion.div>
       )}
 
-      {/* Insights Section (Fades In After Loading) */}
+      {/* Insights Section (Appears Below After Clicking Button) */}
       {showInsights && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
+          className="mt-10 mb-10"
         >
           <InsightsSection patient={patient} />
         </motion.div>

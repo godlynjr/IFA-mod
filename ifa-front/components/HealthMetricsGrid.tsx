@@ -76,7 +76,7 @@ const HealthMetricsGrid: React.FC<HealthMetricsGridProps> = ({ patient, timefram
         } else if (timeframe === "Yearly") {
           const lastMonthlyData = metricData?.data?.monthly_avg?.slice(-1)[0]; // Get the last available monthly data
           value = lastMonthlyData ? roundValue(lastMonthlyData.monthly_avg) : "N/A";
-          trend = lastMonthlyData ? `${roundValue(lastMonthlyData.evolution)}%` : "N/A";
+          trend = lastMonthlyData ? `${roundValue(metricData?.data?.overall_avg_ev)}%` : "N/A";
         } else {
           // Default to overall average
           value = metricData?.data?.overall_avg !== undefined ? roundValue(metricData.data.overall_avg) : "N/A";
