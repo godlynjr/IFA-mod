@@ -41,6 +41,7 @@ app.include_router(report_router)
 async def root():
     return {"message": "Bienvenue sur l'API IFA Health Data 🚀"}
 
+
 # Lancer l'application uniquement si exécutée directement
 # if __name__ == "__main__":
     # import uvicorn
