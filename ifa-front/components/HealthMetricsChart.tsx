@@ -4,73 +4,62 @@ import React, { useState } from "react";
 import {
   LineChart,
   Line,
-  XAxis,
-  YAxis,
   Tooltip,
   ResponsiveContainer,
-  CartesianGrid,
 } from "recharts";
 
+interface Patient {
+  id: string;
+  name: string;
+  lastName: string;
+  gender: string;
+  birthDate: string;
+  height: number;
+  weight: number;
+  metrics: Record<string, any>;
+}
+
 interface HealthMetricsChartProps {
-  patient: any | null;
+  patient: Patient | null;
   timeframe: string;
 }
 
-// Sample Data Generator for Different Timeframes
-const getDataForTimeframe = (timeframe: string) => {
+// Function to extract chart data from patient metrics
+const getChartData = (patient: Patient | null, timeframe: string) => {
+  if (!patient) return [];
+
+  let metricKey = "";
+  let valueKey = ""; // This ensures correct data extraction
+
   switch (timeframe) {
     case "Daily":
-      return [
-        { time: "12 AM", value: 60 },
-        { time: "6 AM", value: 70 },
-        { time: "12 PM", value: 90 },
-        { time: "6 PM", value: 85 },
-        { time: "11 PM", value: 75 },
-      ];
+      metricKey = "daily_avg";
+      valueKey = "daily_avg";
+      break;
     case "Weekly":
-      return [
-        { day: "Mon", value: 100 },
-        { day: "Tue", value: 150 },
-        { day: "Wed", value: 130 },
-        { day: "Thu", value: 170 },
-        { day: "Fri", value: 200 },
-        { day: "Sat", value: 220 },
-        { day: "Sun", value: 190 },
-      ];
+      metricKey = "weekly_avg";
+      valueKey = "weekly_avg";
+      break;
     case "Yearly":
-      return [
-        { month: "JAN", value: 50 },
-        { month: "FEB", value: 80 },
-        { month: "MAR", value: 120 },
-        { month: "APR", value: 90 },
-        { month: "MAY", value: 200 },
-        { month: "JUN", value: 350 },
-        { month: "JUL", value: 180 },
-        { month: "AUG", value: 210 },
-        { month: "SEP", value: 230 },
-        { month: "OCT", value: 250 },
-        { month: "NOV", value: 300 },
-        { month: "DEC", value: 400 },
-      ];
-    case "Live":
-      return [
-        { time: "10:00 AM", value: 100 },
-        { time: "10:05 AM", value: 102 },
-        { time: "10:10 AM", value: 105 },
-        { time: "10:15 AM", value: 98 },
-        { time: "10:20 AM", value: 110 },
-      ];
+      metricKey = "monthly_avg";
+      valueKey = "monthly_avg";
+      break;
     default:
       return [];
   }
+
+  const metricData = patient.metrics.heart?.data?.[metricKey] ?? [];
+
+  return metricData.map((entry: any) => ({
+    value: parseFloat(entry[valueKey]?.toFixed(2) || "0"),
+  }));
 };
 
 // Custom Tooltip
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-white p-2 rounded-md shadow-md text-gray-700 text-sm">
-        <p className="font-semibold">{label}</p>
         <p className="text-lg font-bold">{payload[0].value}</p>
       </div>
     );
@@ -82,17 +71,17 @@ const HealthMetricsChart: React.FC<HealthMetricsChartProps> = ({ patient, timefr
   if (!patient) {
     return (
       <div className="text-center text-gray-500 text-lg mt-10">
-        {/* Select a patient to view activity trends. */}
+        Select a patient to view activity trends.
       </div>
     );
   }
 
-  const data = getDataForTimeframe(timeframe);
+  const data = getChartData(patient, timeframe);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md w-full">
-      <h2 className="text-lg font-semibold mb-2">Activity ({timeframe})</h2>
+      <h2 className="text-lg font-semibold mb-2">Heart Rate Trends ({timeframe})</h2>
 
       <ResponsiveContainer width="100%" height={200}>
         <LineChart
@@ -100,16 +89,6 @@ const HealthMetricsChart: React.FC<HealthMetricsChartProps> = ({ patient, timefr
           onMouseMove={(e) => setHoveredIndex(e.activeTooltipIndex ?? null)}
           onMouseLeave={() => setHoveredIndex(null)}
         >
-          {/* Background Grid */}
-          <CartesianGrid strokeDasharray="3 3" vertical={false} />
-
-          {/* X and Y Axis */}
-          <XAxis
-            dataKey={timeframe === "Yearly" ? "month" : timeframe === "Weekly" ? "day" : "time"}
-            tick={{ fill: "#999" }}
-          />
-          <YAxis tick={{ fill: "#999" }} />
-
           {/* Tooltip */}
           <Tooltip content={<CustomTooltip />} />
 
@@ -133,7 +112,7 @@ const HealthMetricsChart: React.FC<HealthMetricsChartProps> = ({ patient, timefr
                 <circle
                   cx={cx}
                   cy={cy}
-                  r={hoveredIndex === index ? 6 : 0} // Render a transparent circle when not hovered
+                  r={hoveredIndex === index ? 6 : 0}
                   fill={hoveredIndex === index ? "#00C49F" : "transparent"}
                 />
               );

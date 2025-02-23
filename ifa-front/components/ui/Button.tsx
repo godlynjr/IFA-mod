@@ -5,15 +5,16 @@ import React from "react";
 interface RedButtonProps {
   text: string;
   onClick?: () => void;
+  disabled?: boolean;  // ✅ Added disabled prop
 }
 
-const RedButton: React.FC<RedButtonProps> = ({ text, onClick }) => {
+const RedButton: React.FC<RedButtonProps> = ({ text, onClick, disabled }) => {
   return (
     <button
       onClick={onClick}
-      className="px-4 py-2 rounded-xl bg-red-500 text-white border border-transparent 
-                 transition-all duration-200 ease-in-out 
-                 hover:bg-white hover:text-red-600 hover:border-red-600"
+      disabled={disabled}  // ✅ Apply disabled state
+      className={`px-4 py-2 rounded-xl border border-transparent transition-all duration-200 ease-in-out 
+                 ${disabled ? "bg-gray-400 cursor-not-allowed" : "bg-red-500 text-white hover:bg-white hover:text-red-600 hover:border-red-600"}`}
     >
       {text}
     </button>

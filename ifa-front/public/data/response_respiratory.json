@@ -1,0 +1,26 @@
+{
+  "status": "success",
+  "data": {
+    "daily_avg": [
+      {
+        "day": "2025-01-02",
+        "daily_avg": 15.571428571428571,
+        "evolution": 0
+      }
+    ],
+    "weekly_avg": [
+      {
+        "week": "2024-12-30/2025-01-05",
+        "weekly_avg": 15.571428571428571
+      }
+    ],
+    "monthly_avg": [
+      {
+        "month": "2025-01",
+        "monthly_avg": 15.571428571428571
+      }
+    ],
+    "overall_avg": 15.571428571428571,
+    "overall_avg_ev": 0
+  }
+}

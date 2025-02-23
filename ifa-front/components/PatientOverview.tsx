@@ -1,26 +1,38 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
+import RedButton from "./ui/Button";
+import InsightsSection from "./InsightsSection";
+import { motion } from "framer-motion";
 
 interface Patient {
-  name?: string;
-  lastName?: string;
-  birthDate?: string;
-  gender?: string;
-  height?: string;
-  weight?: string;
+  id: string;
+  name: string;
+  lastName: string;
+  gender: string;
+  birthDate: string;
+  height: number;
+  weight: number;
+  metrics: Record<string, any>;
 }
 
-interface PatientOverviewProps {
-  patient: Patient | null;
-}
+// Helper function to return "N/A" for missing values
+const getValue = (value?: string | number) => (value !== undefined && value !== "" ? value : "N/A");
 
-import RedButton from "./ui/Button";
+const PatientOverview: React.FC<{ patient: Patient | null }> = ({ patient }) => {
+  const [loading, setLoading] = useState(false);
+  const [showInsights, setShowInsights] = useState(false);
 
-const PatientOverview: React.FC<PatientOverviewProps> = ({ patient }) => {
-  // Helper function to return "N/A" for empty or missing values
-  const getValue = (value?: string) => (value && value.trim() !== "" ? value : "N/A");
+  // Handle AI Insights Button Click
+  const handleShowInsights = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setShowInsights(true);
+    }, 3000); // Simulates loading for 3 seconds
+  };
 
+  // If no patient is selected
   if (!patient) {
     return (
       <div className="bg-white p-6 rounded-lg shadow-md w-full text-gray-500 text-center">
@@ -30,47 +42,75 @@ const PatientOverview: React.FC<PatientOverviewProps> = ({ patient }) => {
   }
 
   return (
-    <div className="p-6 rounded-lg w-full flex justify-between items-start">
-      {/* Patient Details (Left Side) */}
-      <div className="flex-1">
-        <h2 className="text-xl font-semibold mb-4">Patient Overview</h2>
+    <>
+      {/* Patient Overview Section */}
+      <div className="p-6 rounded-lg w-full flex justify-between items-start relative">
+        <div className="flex-1">
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">Patient Overview</h2>
 
-        {/* Row 1: Name, Last Name, Birthdate */}
-        <div className="grid grid-cols-3 gap-4 mb-4">
-          <div>
-            <p className="text-sm font-medium text-gray-600">Name</p>
-            <p className="text-lg font-semibold">{getValue(patient.name)}</p>
-          </div>
-          <div>
-            <p className="text-sm font-medium text-gray-600">Last Name</p>
-            <p className="text-lg font-semibold">{getValue(patient.lastName)}</p>
-          </div>
-          <div>
-            <p className="text-sm font-medium text-gray-600">Birth Date</p>
-            <p className="text-lg font-semibold">{getValue(patient.birthDate)}</p>
+          {/* Grid Layout - 2 Rows, 3 Columns */}
+          <div className="grid grid-cols-3 gap-6">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Name</p>
+              <p className="text-lg font-semibold text-gray-900">{getValue(patient.name)}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-600">Last Name</p>
+              <p className="text-lg font-semibold text-gray-900">{getValue(patient.lastName)}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-600">Gender</p>
+              <p className="text-lg font-semibold text-gray-900">{getValue(patient.gender)}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-600">Birth Date</p>
+              <p className="text-lg font-semibold text-gray-900">{getValue(patient.birthDate)}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-600">Height (cm)</p>
+              <p className="text-lg font-semibold text-gray-900">{getValue(patient.height)}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-600">Weight (kg)</p>
+              <p className="text-lg font-semibold text-gray-900">{getValue(patient.weight)}</p>
+            </div>
           </div>
         </div>
 
-        {/* Row 2: Gender, Height, Weight */}
-        <div className="grid grid-cols-3 gap-4">
-          <div>
-            <p className="text-sm font-medium text-gray-600">Gender</p>
-            <p className="text-lg font-semibold">{getValue(patient.gender)}</p>
-          </div>
-          <div>
-            <p className="text-sm font-medium text-gray-600">Height (cm)</p>
-            <p className="text-lg font-semibold">{getValue(patient.height)}</p>
-          </div>
-          <div>
-            <p className="text-sm font-medium text-gray-600">Weight (kg)</p>
-            <p className="text-lg font-semibold">{getValue(patient.weight)}</p>
-          </div>
+        {/* AI Insights Button */}
+        <div className="flex items-center">
+          <RedButton text="AI INSIGHTS" onClick={handleShowInsights} />
         </div>
       </div>
 
-      {/* AI Insights Button (Right Side) */}
-      <RedButton text="AI INSIGHTS" />
-    </div>
+      {/* Full-Screen Loading Animation */}
+      {loading && (
+        <motion.div
+          className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-95 z-50"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <motion.div
+            className="text-center text-gray-800 text-xl font-semibold"
+            animate={{ opacity: [0, 1, 0], transition: { duration: 1.5, repeat: Infinity } }}
+          >
+            Loading Insights...
+          </motion.div>
+        </motion.div>
+      )}
+
+      {/* Insights Section (Fades In After Loading) */}
+      {showInsights && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <InsightsSection patient={patient} />
+        </motion.div>
+      )}
+    </>
   );
 };
 
