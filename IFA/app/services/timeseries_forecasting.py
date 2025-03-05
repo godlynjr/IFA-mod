@@ -12,10 +12,7 @@ from sklearn.metrics import mean_absolute_percentage_error
 def load_timeseries_data(xml_file):
     """Charge les données XML et les transforme en DataFrame de fréquence cardiaque."""
 
-    df_records = extract_data(xml_file)  #  Extract XML data
-    #df_heart_rate_minute = process_heart_data(df_records)
-    #df_prepared = prepare_forecasting_data(df_heart_rate_minute)
-
+    df_records = extract_data(xml_file) 
     return df_records
 
 def process_heart_data(df_records):
